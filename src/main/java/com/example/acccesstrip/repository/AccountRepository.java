@@ -2,6 +2,11 @@ package com.example.acccesstrip.repository;
 
 import com.example.acccesstrip.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface AccessTripRepository extends JpaRepository<Account, Long> {
+import java.util.Optional;
+
+@Repository
+public interface AccountRepository extends JpaRepository<Account, Long> {
+    Optional<Account> findByAccountEmail(String email);
 }
