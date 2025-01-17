@@ -8,8 +8,7 @@ public class BadRequestException extends RuntimeException {
     private final String errorMessage;
     private final Map<String, Object> errorDetails;
 
-    public BadRequestException(String message, int errorId, String errorMessage, Map<String, Object> errorDetails) {
-        super(message);
+    public BadRequestException(int errorId, String errorMessage, Map<String, Object> errorDetails) {
         this.errorId = errorId;
         this.errorMessage = errorMessage;
         this.errorDetails = errorDetails;

@@ -24,7 +24,13 @@ public class GlobalExceptionHandler {
                 raisedException.getErrorMessage(),
                 raisedException.getErrorDetails()
         );
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        if(raisedException.getErrorId() == HttpStatus.BAD_REQUEST.value()){
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }else if(raisedException.getErrorId() == HttpStatus.CONFLICT.value()){
+            return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+        }else{
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
