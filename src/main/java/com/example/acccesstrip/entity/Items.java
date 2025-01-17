@@ -11,7 +11,6 @@ public class Items {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "item_id")
     private Long itemId;
-
     @Column(name = "item_name")
     private String itemName;
     @Column(name = "item_image_url")

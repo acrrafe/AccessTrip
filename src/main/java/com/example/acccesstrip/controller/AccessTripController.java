@@ -1,20 +1,24 @@
 package com.example.acccesstrip.controller;
 
 import com.example.acccesstrip.dto.AccountResponse;
+import com.example.acccesstrip.dto.ItemRequest;
 import com.example.acccesstrip.dto.LoginAccountRequest;
 import com.example.acccesstrip.dto.SignUpAccountRequest;
 import com.example.acccesstrip.entity.Account;
+import com.example.acccesstrip.entity.Items;
 import com.example.acccesstrip.exception.AccountAlreadyExistException;
 import com.example.acccesstrip.exception.ApiErrorResponse;
 import com.example.acccesstrip.exception.BadRequestException;
 import com.example.acccesstrip.exception.InvalidCredentialsException;
 import com.example.acccesstrip.repository.AccountRepository;
+import com.example.acccesstrip.repository.ItemRepository;
 import com.example.acccesstrip.service.AccessTripService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/access-trip")
@@ -24,7 +28,9 @@ public class AccessTripController {
     private final AccountRepository accountRepository;
 
     public AccessTripController(
-            AccessTripService accessTripService, AccountRepository accountRepository){
+            AccessTripService accessTripService,
+            AccountRepository accountRepository
+            ){
         this.accessTripService = accessTripService;
         this.accountRepository = accountRepository;
     }
@@ -34,7 +40,8 @@ public class AccessTripController {
     public ResponseEntity<Object> createAccount
             (@RequestBody  SignUpAccountRequest signUpAccountRequest){
         try{
-            Account account = accessTripService.createAccount(signUpAccountRequest);
+            Account account =
+                    accessTripService.createAccount(signUpAccountRequest);
             AccountResponse accountResponse = new AccountResponse();
             accountResponse.setAccountName(account.getAccountName());
             accountResponse.setAccountEmail(account.getAccountEmail());
@@ -47,21 +54,18 @@ public class AccessTripController {
                     e.getMessage(),
                     Collections.emptyMap()
             );
-//            return ResponseEntity.status(HttpStatus.CONFLICT).body(badRequestException);
         }catch (InvalidCredentialsException e){
             throw new BadRequestException(
                     HttpStatus.BAD_REQUEST.value(),
                     e.getMessage(),
                     Collections.emptyMap()
             );
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiErrorResponse);
         } catch (Exception e){
             throw new BadRequestException(
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     e.getMessage(),
                     Collections.emptyMap()
             );
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiErrorResponse);
         }
     }
     @CrossOrigin(origins = "http://localhost:3000")
@@ -81,14 +85,43 @@ public class AccessTripController {
                     e.getMessage(),
                     Collections.emptyMap()
             );
-//            return ResponseEntity.status(HttpStatus.CONFLICT).body(apiErrorResponse);
         }catch (Exception e){
             throw new BadRequestException(
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     e.getMessage(),
                     Collections.emptyMap()
             );
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiErrorResponse);
         }
     }
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/home")
+    public ResponseEntity<Object> getItems(){
+        try{
+            List<Items> items = accessTripService.getItems();
+            return ResponseEntity.status(HttpStatus.OK).body(items);
+        }catch (Exception e){
+            throw new BadRequestException(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    e.getMessage(),
+                    Collections.emptyMap()
+            );
+        }
+    }
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/home/{itemId}")
+    public ResponseEntity<Object> getItem(
+            @PathVariable Long itemId){
+        try{
+            Items item = accessTripService.getItem(itemId);
+            return ResponseEntity.status(HttpStatus.OK).body(item);
+        }catch (Exception e){
+            throw new BadRequestException(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    e.getMessage(),
+                    Collections.emptyMap()
+            );
+        }
+    }
+    // TODO: Create POST for add to cart
+
 }
