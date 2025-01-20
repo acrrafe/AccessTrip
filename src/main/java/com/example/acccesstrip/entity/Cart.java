@@ -43,4 +43,20 @@ public class Cart {
     @ManyToOne
     @JoinColumn(name = "cart_item_id")
     private CartItems cartItems;
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+    public CartItems getCartItems() {
+        return cartItems;
+    }
+
+    public void setCartItems(CartItems cartItems) {
+        this.cartItems = cartItems;
+    }
 }

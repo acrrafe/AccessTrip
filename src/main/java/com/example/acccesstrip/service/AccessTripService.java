@@ -1,5 +1,6 @@
 package com.example.acccesstrip.service;
 
+import com.example.acccesstrip.dto.AddToCartReponse;
 import com.example.acccesstrip.dto.ItemRequest;
 import com.example.acccesstrip.dto.LoginAccountRequest;
 import com.example.acccesstrip.dto.SignUpAccountRequest;
@@ -13,4 +14,5 @@ public interface AccessTripService {
     Account login(LoginAccountRequest loginAccountRequest);
     List<Items> getItems();
     Items getItem(Long itemId);
+    AddToCartReponse addToCart(ItemRequest itemRequest);
 }

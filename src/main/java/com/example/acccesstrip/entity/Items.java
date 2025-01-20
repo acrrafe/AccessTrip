@@ -89,4 +89,12 @@ public class Items {
     @ManyToOne
     @JoinColumn(name = "cart_item_id")
     private CartItems cartItems;
+
+    public CartItems getCartItems() {
+        return cartItems;
+    }
+
+    public void setCartItems(CartItems cartItems) {
+        this.cartItems = cartItems;
+    }
 }
