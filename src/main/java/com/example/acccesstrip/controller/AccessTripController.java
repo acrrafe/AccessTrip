@@ -41,7 +41,6 @@ public class AccessTripController {
             accountResponse.setAccountName(account.getAccountName());
             accountResponse.setAccountEmail(account.getAccountEmail());
             accountResponse.setCreatedAt(account.getCreatedAt());
-            accountRepository.save(account);
             return ResponseEntity.status(HttpStatus.OK).body(accountResponse);
         }catch (AccountAlreadyExistException e){
             throw new BadRequestException(

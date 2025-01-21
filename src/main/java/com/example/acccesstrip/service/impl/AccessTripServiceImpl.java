@@ -16,9 +16,9 @@ import com.example.acccesstrip.repository.CartItemRepository;
 import com.example.acccesstrip.repository.CartRepository;
 import com.example.acccesstrip.repository.ItemRepository;
 import com.example.acccesstrip.service.AccessTripService;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +45,7 @@ public class AccessTripServiceImpl implements AccessTripService {
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
     }
+    @Transactional
     @Override
     public Account createAccount(SignUpAccountRequest signUpAccountRequest) {
         Optional<Account> acc = accountRepository.findByAccountEmail(signUpAccountRequest.getAccountEmail());
@@ -56,6 +57,12 @@ public class AccessTripServiceImpl implements AccessTripService {
         account.setAccountName(signUpAccountRequest.getAccountUserName());
         account.setAccountPassword(passwordEncoder.encode(signUpAccountRequest.getAccountPassword()));
         account.setCreatedAt(LocalDate.now());
+        // Upon creating new account, ensure to assign cart id to it
+        Cart cart = new Cart();
+        cart.setCreatedAt(LocalDate.now());
+        cartRepository.save(cart);
+        account.setCart(cart);
+        accountRepository.save(account);
         return account;
     }
 

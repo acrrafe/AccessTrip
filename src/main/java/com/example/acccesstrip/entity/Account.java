@@ -72,7 +72,7 @@ public class Account {
     }
 
     @ManyToOne
-    @JoinColumn(name = "cart_id")
+    @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
     public Cart getCart() {
