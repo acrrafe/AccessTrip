@@ -1,17 +1,8 @@
 package com.example.acccesstrip.dto;
 
-public class AddToCartReponse {
-    private Long accountId;
+public class AddToCartResponse {
     private Long cartId;
     private Long itemId;
-
-    public Long getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
-    }
 
     public Long getCartId() {
         return cartId;

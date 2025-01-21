@@ -1,6 +1,6 @@
 package com.example.acccesstrip.service.impl;
 
-import com.example.acccesstrip.dto.AddToCartReponse;
+import com.example.acccesstrip.dto.AddToCartResponse;
 import com.example.acccesstrip.dto.ItemRequest;
 import com.example.acccesstrip.dto.LoginAccountRequest;
 import com.example.acccesstrip.dto.SignUpAccountRequest;
@@ -102,21 +102,37 @@ public class AccessTripServiceImpl implements AccessTripService {
         }
     }
 
+    @Transactional
     @Override
-    public AddToCartReponse addToCart(ItemRequest itemRequest) {
-        Account account = new Account();
-        Cart cart = new Cart();
-        cart.setCartId(itemRequest.getCartId());
-        cart.setCreatedAt(itemRequest.getCreatedAt());
-        CartItems cartItems = new CartItems();
-        cartItems.setCartItemID(itemRequest.getCartItemId());
-        cartItems.setCartItemQuantity(1L);
+    public AddToCartResponse addToCart(ItemRequest itemRequest) {
+
+        // If there's no existing cart, create a new one
+        Cart cart = cartRepository.findById(itemRequest.getCartId())
+                .orElseGet(() -> {
+                    Cart newCart = new Cart();
+                    newCart.setCartId(itemRequest.getCartId());
+                    return newCart;
+        });
+        // Get item details through item request id
+        Items item = itemRepository.findById(itemRequest.getCartItemId())
+                .orElseThrow(() -> new InvalidItemException("Item not found"));
+
+        // This will check if the current item request is already in user's cart
+        CartItems cartItems = cart.getCartItems().stream()
+                .filter(ci -> ci.getItem().getItemId().equals(item.getItemId()))
+                .findFirst()
+                .orElse(new CartItems());
+
+        cartItems.setCart(cart);
+        cartItems.setItem(item);
+        cartItems.setCartItemQuantity(cartItems.getCartItemQuantity()
+                != null ? cartItems.getCartItemQuantity() + 1 : 1L);
+        cart.getCartItems().add(cartItems);
         cartRepository.save(cart);
-        cartItemRepository.save(cartItems);
-        AddToCartReponse addToCartReponse = new AddToCartReponse();
-        addToCartReponse.setAccountId(itemRequest.getCartId());
-        addToCartReponse.setCartId(itemRequest.getCartId());
-        addToCartReponse.setItemId(itemRequest.getCartItemId());
-        return addToCartReponse;
+
+        AddToCartResponse addToCartResponse = new AddToCartResponse();
+        addToCartResponse.setCartId(itemRequest.getCartId());
+        addToCartResponse.setItemId(itemRequest.getCartItemId());
+        return addToCartResponse;
     }
 }

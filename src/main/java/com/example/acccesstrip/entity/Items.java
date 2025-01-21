@@ -3,6 +3,7 @@ package com.example.acccesstrip.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class Items {
@@ -86,15 +87,14 @@ public class Items {
         this.createdAt = createdAt;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "cart_item_id")
-    private CartItems cartItems;
+    @OneToMany(mappedBy = "item")
+    private List<CartItems> cartItems;
 
-    public CartItems getCartItems() {
+    public List<CartItems> getCartItems() {
         return cartItems;
     }
 
-    public void setCartItems(CartItems cartItems) {
+    public void setCartItems(List<CartItems> cartItems) {
         this.cartItems = cartItems;
     }
 }

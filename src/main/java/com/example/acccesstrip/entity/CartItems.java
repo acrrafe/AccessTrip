@@ -16,11 +16,13 @@ public class CartItems {
     @Column(name = "cart_item_quantity")
     private Long cartItemQuantity;
 
-    @OneToMany(mappedBy = "cartItems")
-    private List<Cart> cart;
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
-    @OneToMany(mappedBy = "cartItems")
-    private List<Items> items;
+    @ManyToOne
+    @JoinColumn(name = "item_id")
+    private Items item;
 
     public Long getCartItemID() {
         return cartItemID;
@@ -38,19 +40,19 @@ public class CartItems {
         this.cartItemQuantity = cartItemQuantity;
     }
 
-    public List<Cart> getCart() {
+    public Cart getCart() {
         return cart;
     }
 
-    public void setCart(List<Cart> cart) {
+    public void setCart(Cart cart) {
         this.cart = cart;
     }
 
-    public List<Items> getItems() {
-        return items;
+    public Items getItem() {
+        return item;
     }
 
-    public void setItems(List<Items> items) {
-        this.items = items;
+    public void setItem(Items item) {
+        this.item = item;
     }
 }

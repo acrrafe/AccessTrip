@@ -6,7 +6,6 @@ import com.example.acccesstrip.entity.Items;
 import com.example.acccesstrip.exception.AccountAlreadyExistException;
 import com.example.acccesstrip.exception.BadRequestException;
 import com.example.acccesstrip.exception.InvalidCredentialsException;
-import com.example.acccesstrip.repository.AccountRepository;
 import com.example.acccesstrip.service.AccessTripService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +19,11 @@ import java.util.List;
 public class AccessTripController {
 
     private final AccessTripService accessTripService;
-    private final AccountRepository accountRepository;
 
     public AccessTripController(
-            AccessTripService accessTripService,
-            AccountRepository accountRepository
+            AccessTripService accessTripService
             ){
         this.accessTripService = accessTripService;
-        this.accountRepository = accountRepository;
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
@@ -116,14 +112,14 @@ public class AccessTripController {
             );
         }
     }
-    // TODO: Create POST for add to cart
+
     @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/home/addToCart")
+    @PostMapping("/addToCart")
     public ResponseEntity<Object> addToCart(
             @RequestBody ItemRequest itemRequest){
         try{
-            AddToCartReponse addToCartReponse = accessTripService.addToCart(itemRequest);
-            return ResponseEntity.status(HttpStatus.OK).body(addToCartReponse);
+            AddToCartResponse addToCartResponse = accessTripService.addToCart(itemRequest);
+            return ResponseEntity.status(HttpStatus.OK).body(addToCartResponse);
         } catch (Exception e) {
             throw new BadRequestException(
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),

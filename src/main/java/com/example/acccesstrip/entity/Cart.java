@@ -40,9 +40,8 @@ public class Cart {
     @OneToMany(mappedBy = "cart")
     private List<Account> accounts;
 
-    @ManyToOne
-    @JoinColumn(name = "cart_item_id")
-    private CartItems cartItems;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    private List<CartItems> cartItems;
 
     public List<Account> getAccounts() {
         return accounts;
@@ -52,11 +51,11 @@ public class Cart {
         this.accounts = accounts;
     }
 
-    public CartItems getCartItems() {
+    public List<CartItems> getCartItems() {
         return cartItems;
     }
 
-    public void setCartItems(CartItems cartItems) {
+    public void setCartItems(List<CartItems> cartItems) {
         this.cartItems = cartItems;
     }
 }
