@@ -1,9 +1,6 @@
 package com.example.acccesstrip.service.impl;
 
-import com.example.acccesstrip.dto.AddToCartResponse;
-import com.example.acccesstrip.dto.ItemRequest;
-import com.example.acccesstrip.dto.LoginAccountRequest;
-import com.example.acccesstrip.dto.SignUpAccountRequest;
+import com.example.acccesstrip.dto.*;
 import com.example.acccesstrip.entity.Account;
 import com.example.acccesstrip.entity.Cart;
 import com.example.acccesstrip.entity.CartItems;
@@ -17,14 +14,20 @@ import com.example.acccesstrip.repository.CartRepository;
 import com.example.acccesstrip.repository.ItemRepository;
 import com.example.acccesstrip.service.AccessTripService;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AccessTripServiceImpl implements AccessTripService {
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(AccessTripServiceImpl.class);
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
@@ -47,7 +50,7 @@ public class AccessTripServiceImpl implements AccessTripService {
     }
     @Transactional
     @Override
-    public Account createAccount(SignUpAccountRequest signUpAccountRequest) {
+    public AccountResponse createAccount(SignUpAccountRequest signUpAccountRequest) {
         Optional<Account> acc = accountRepository.findByAccountEmail(signUpAccountRequest.getAccountEmail());
         if(acc.isPresent()){
             throw new AccountAlreadyExistException("This email is already exist!");
@@ -63,25 +66,42 @@ public class AccessTripServiceImpl implements AccessTripService {
         cartRepository.save(cart);
         account.setCart(cart);
         accountRepository.save(account);
-        return account;
+        // Expose DTO
+        AccountResponse accountResponse = new AccountResponse();
+        accountResponse.setAccountName(account.getAccountName());
+        accountResponse.setAccountEmail(account.getAccountEmail());
+        accountResponse.setCreatedAt(account.getCreatedAt());
+        return accountResponse;
     }
 
     @Override
-    public Account login(LoginAccountRequest loginAccountRequest) {
+    public AccountResponse login(LoginAccountRequest loginAccountRequest) {
         Optional<Account> account = accountRepository.findByAccountEmail(loginAccountRequest.getAccountEmail());
         if(account.isEmpty() || !passwordEncoder.matches
                 (loginAccountRequest.getAccountPassword(), account.get().getAccountPassword())){
             throw new InvalidCredentialsException("Invalid email or password");
         }
-        Account accountOpt = new Account();
-        accountOpt.setAccountName(account.get().getAccountName());
-        accountOpt.setAccountEmail(account.get().getAccountEmail());
-        return accountOpt;
+        // DTO
+        AccountResponse accountResponse = new AccountResponse();
+        accountResponse.setAccountName(account.get().getAccountName());
+        accountResponse.setAccountEmail(account.get().getAccountEmail());
+        accountResponse.setCreatedAt(account.get().getCreatedAt());
+        return accountResponse;
     }
 
     @Override
-    public List<Items> getItems() {
-        return itemRepository.findAll();
+    public List<ItemResponse> getItems() {
+        List<Items> items = itemRepository.findAll();
+        return items.stream()
+                .map(item -> new ItemResponse(
+                        item.getItemId(),
+                        item.getItemName(),
+                        item.getItemImageURL(),
+                        item.getItemDescription(),
+                        item.getItemPrice(),
+                        item.getItemStockQuantity(),
+                        item.getCreatedAt()))
+                .collect(Collectors.toList());
     }
 
     @Override

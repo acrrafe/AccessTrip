@@ -31,13 +31,9 @@ public class AccessTripController {
     public ResponseEntity<Object> createAccount
             (@RequestBody  SignUpAccountRequest signUpAccountRequest){
         try{
-            Account account =
+            AccountResponse account =
                     accessTripService.createAccount(signUpAccountRequest);
-            AccountResponse accountResponse = new AccountResponse();
-            accountResponse.setAccountName(account.getAccountName());
-            accountResponse.setAccountEmail(account.getAccountEmail());
-            accountResponse.setCreatedAt(account.getCreatedAt());
-            return ResponseEntity.status(HttpStatus.OK).body(accountResponse);
+            return ResponseEntity.status(HttpStatus.OK).body(account);
         }catch (AccountAlreadyExistException e){
             throw new BadRequestException(
                     HttpStatus.CONFLICT.value(),
@@ -63,12 +59,8 @@ public class AccessTripController {
     public ResponseEntity<Object> login(
             @RequestBody LoginAccountRequest loginAccountRequest){
         try{
-            Account account = accessTripService.login(loginAccountRequest);
-            AccountResponse accountResponse = new AccountResponse();
-            accountResponse.setAccountName(account.getAccountName());
-            accountResponse.setAccountEmail(account.getAccountEmail());
-            accountResponse.setCreatedAt(account.getCreatedAt());
-            return ResponseEntity.status(HttpStatus.OK).body(accountResponse);
+            AccountResponse account = accessTripService.login(loginAccountRequest);
+            return ResponseEntity.status(HttpStatus.OK).body(account);
         }catch (AccountAlreadyExistException | InvalidCredentialsException e){
             throw new BadRequestException(
                     HttpStatus.BAD_REQUEST.value(),
@@ -87,7 +79,7 @@ public class AccessTripController {
     @GetMapping("/home")
     public ResponseEntity<Object> getItems(){
         try{
-            List<Items> items = accessTripService.getItems();
+            List<ItemResponse> items = accessTripService.getItems();
             return ResponseEntity.status(HttpStatus.OK).body(items);
         }catch (Exception e){
             throw new BadRequestException(
