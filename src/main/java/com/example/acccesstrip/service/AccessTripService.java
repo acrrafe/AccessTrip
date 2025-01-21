@@ -12,4 +12,5 @@ public interface AccessTripService {
     List<ItemResponse> getItems();
     Items getItem(Long itemId);
     AddToCartResponse addToCart(ItemRequest itemRequest);
+    List<CartItemsResponse> getCartItems(Long accountId);
 }

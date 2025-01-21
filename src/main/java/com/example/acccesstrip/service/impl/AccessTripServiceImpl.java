@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -125,7 +126,6 @@ public class AccessTripServiceImpl implements AccessTripService {
     @Transactional
     @Override
     public AddToCartResponse addToCart(ItemRequest itemRequest) {
-
         // If there's no existing cart, create a new one
         Cart cart = cartRepository.findById(itemRequest.getCartId())
                 .orElseGet(() -> {
@@ -154,5 +154,30 @@ public class AccessTripServiceImpl implements AccessTripService {
         addToCartResponse.setCartId(itemRequest.getCartId());
         addToCartResponse.setItemId(itemRequest.getCartItemId());
         return addToCartResponse;
+    }
+
+    @Transactional
+    @Override
+    public List<CartItemsResponse> getCartItems(Long accountId) {
+
+        Cart cart = cartRepository.findById(accountId)
+                .orElseThrow(() -> new InvalidItemException("Invalid ID"));
+
+        List<CartItems> cartItems = cartItemRepository.findAllByCart_CartId(cart.getCartId())
+                .orElseThrow(() -> new InvalidItemException("Empty Cart"));
+        List<CartItemsResponse> cartItemsResponses = new ArrayList<>();
+
+        cartItems.forEach(cartItem -> {
+            CartItemsResponse cartItemsResponse = new CartItemsResponse();
+            cartItemsResponse.setItemId(cartItem.getItem().getItemId());
+            cartItemsResponse.setItemName(cartItem.getItem().getItemName());
+            cartItemsResponse.setItemDescription(cartItem.getItem().getItemDescription());
+            cartItemsResponse.setItemPrice(cartItem.getItem().getItemPrice());
+            cartItemsResponse.setItemImageURL(cartItem.getItem().getItemImageURL());
+            cartItemsResponse.setItemStockQuantity(cartItem.getCartItemQuantity());
+            cartItemsResponses.add(cartItemsResponse);
+        });
+
+        return cartItemsResponses;
     }
 }

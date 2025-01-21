@@ -119,8 +119,24 @@ public class AccessTripController {
                     Collections.emptyMap()
             );
         }
+    }
 
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/getItems/{accountId}")
+    public ResponseEntity<Object> getCartItems(
+            @PathVariable Long accountId){
+        try{
+            List<CartItemsResponse> cartItemsResponses =
+                    accessTripService.getCartItems(accountId);
+            return ResponseEntity.status(HttpStatus.OK).body(cartItemsResponses);
+        } catch (Exception e) {
+            throw new BadRequestException(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    e.getMessage(),
+                    Collections.emptyMap()
+            );
+        }
     }
 
 }
