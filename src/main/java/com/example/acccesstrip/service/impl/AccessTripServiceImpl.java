@@ -84,6 +84,7 @@ public class AccessTripServiceImpl implements AccessTripService {
         }
         // DTO
         AccountResponse accountResponse = new AccountResponse();
+        accountResponse.setAccountId(account.get().getId());
         accountResponse.setAccountName(account.get().getAccountName());
         accountResponse.setAccountEmail(account.get().getAccountEmail());
         accountResponse.setCreatedAt(account.get().getCreatedAt());
@@ -179,5 +180,30 @@ public class AccessTripServiceImpl implements AccessTripService {
         });
 
         return cartItemsResponses;
+    }
+
+    @Transactional
+    @Override
+    public CheckoutResponse checkoutItems(CheckoutRequest checkoutRequest) {
+
+        Cart cart = cartRepository.findById(checkoutRequest.getAccountId())
+                .orElseThrow(() -> new InvalidItemException("Invalid ID"));
+
+        List<CartItems> cartItems = cartItemRepository.findAllByCart_CartId(cart.getCartId())
+                .orElseThrow(() -> new InvalidItemException("Empty Cart"));
+
+        List<CartItems> itemsToRemove = cartItems.stream()
+                .filter(cartItem ->
+                        checkoutRequest.getItemId().contains(cartItem.getItem().getItemId()))
+                .toList();
+        if(itemsToRemove.isEmpty()){
+            throw new InvalidCredentialsException("Cart is empty!");
+        }
+        CheckoutResponse checkoutResponse = new CheckoutResponse();
+        checkoutResponse.setCartId(cart.getCartId());
+        checkoutResponse.setCheckoutItemsCount(itemsToRemove.size());
+        cartItemRepository.deleteAll(itemsToRemove);
+
+        return checkoutResponse;
     }
 }

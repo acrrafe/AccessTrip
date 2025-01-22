@@ -139,4 +139,20 @@ public class AccessTripController {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @DeleteMapping("/checkout")
+    public ResponseEntity<Object> checkoutItems(
+            @RequestBody CheckoutRequest checkoutRequest){
+        try{
+            CheckoutResponse checkoutResponse = accessTripService.checkoutItems(checkoutRequest);
+            return ResponseEntity.status(HttpStatus.OK).body(checkoutResponse);
+        } catch (Exception e) {
+            throw new BadRequestException(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    e.getMessage(),
+                    Collections.emptyMap()
+            );
+        }
+    }
+
 }
